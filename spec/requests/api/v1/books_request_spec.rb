@@ -97,4 +97,23 @@ describe "Books API" do
     expect(book.title).to_not eq(previous_name)
     expect(book.title).to eq("Charlotte's Web")
   end
+
+  it "can destroy a book" do
+    book = create(:book)
+
+    expect(Book.count).to eq(1)
+
+    delete "/api/v1/books/#{book.id}"
+
+    expect(response).to be_successful
+    expect(Book.count).to eq(0)
+    expect{Book.find(book.id)}.to raise_error(ActiveRecord::RecordNotFound)
+    
+    book1 = create(:book)
+
+    expect(Book.count).to eq(1)
+
+    expect{ delete "/api/v1/books/#{book1.id}" }.to change(Book, :count).by(-1)
+    #rspec expect change method, alternative way to test delete
+  end
 end
